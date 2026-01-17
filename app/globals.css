@@ -1,15 +1,28 @@
 @import "tailwindcss";
 
+/* Custom CSS Variables for Brand */
 :root {
+  /* Colors */
   --background: #ffffff;
-  --foreground: #171717;
-}
+  --foreground: #0f172a;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Brand Colors - Purple Palette */
+  --purple-50: #f5f3ff;
+  --purple-100: #ede9fe;
+  --purple-200: #ddd6fe;
+  --purple-500: #785A9E;
+  --purple-600: #6b4f8a;
+  --purple-700: #5e4476;
+  --purple-800: #4a3659;
+  --purple-900: #3d2d4a;
+
+  /* Neutral Colors */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-900: #0f172a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -19,8 +32,66 @@
   }
 }
 
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--slate-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #785A9E;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6b4f8a;
+}
+
+/* Selection */
+::selection {
+  background: #785A9E;
+  color: white;
+}
+
+/* Focus Visible */
+:focus-visible {
+  outline: 2px solid #785A9E;
+  outline-offset: 2px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
 }
