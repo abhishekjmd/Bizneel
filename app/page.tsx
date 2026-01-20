@@ -43,9 +43,10 @@ export default function HomePage() {
       {/* Hero Section */}
       <Hero
         title="Radiant Skin, Naturally"
-        subtitle="Discover premium cosmetics crafted with nature's finest ingredients. Vegan, cruelty-free, and sustainably made for your healthiest skin yet."
+        subtitle="YOU'll FEEL THE DIFFERENCE. Discover premium cosmetics crafted with nature's finest ingredients."
         ctaText="Get a Quote"
         ctaHref="/contact"
+        backgroundImage="/hero-banner.jpg"
       />
 
       {/* Features Section */}
