@@ -216,7 +216,7 @@ export function ParallaxHero({
           ref={canvasRef}
           className="absolute inset-0 w-full h-full"
           style={{
-            imageRendering: "high-quality",
+            imageRendering: "auto",
             display: "block",
             maxWidth: "100vw",
             maxHeight: "100vh",
