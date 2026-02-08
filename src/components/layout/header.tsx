@@ -13,12 +13,21 @@ import { cn } from "@/lib/utils";
 export function Header() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [isInParallax, setIsInParallax] = useState(true);
 
     // Handle scroll effect
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 10);
+            
+            // Check if we're still in the parallax section (400vh)
+            const parallaxSection = document.querySelector('[class*="h-[400vh]"]');
+            if (parallaxSection) {
+                const rect = parallaxSection.getBoundingClientRect();
+                setIsInParallax(rect.bottom > 0);
+            }
         };
+        handleScroll(); // Initial check
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
@@ -46,8 +55,10 @@ export function Header() {
     return (
         <header
             className={cn(
-                "sticky top-0 z-50 w-full transition-all duration-300",
-                isScrolled
+                "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500",
+                isInParallax
+                    ? "bg-transparent border-transparent"
+                    : isScrolled
                     ? "border-b border-purple-100 bg-white/95 backdrop-blur-lg shadow-sm"
                     : "border-b border-transparent bg-white/80 backdrop-blur-md"
             )}
@@ -60,21 +71,21 @@ export function Header() {
                         className="flex items-center gap-3 z-50 relative group"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
-                        {/* Logo Image - Replace with your actual logo */}
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
-                            {/* If you have a logo image, use this: */}
-                            {/* <Image
-                src="/logo.png"
-                alt="BIZNEEL Logo"
-                width={48}
-                height={48}
-                className="object-contain"
-              /> */}
-
-                            {/* Fallback logo */}
-                            <span className="text-2xl font-light text-white">B</span>
+                        <div className={cn(
+                            "relative w-12 h-12 rounded-full overflow-hidden flex items-center justify-center group-hover:scale-110 transition-all duration-500",
+                            isInParallax 
+                                ? "bg-white/90 backdrop-blur-sm shadow-lg" 
+                                : "bg-gradient-to-br from-purple-500 to-purple-600"
+                        )}>
+                            <span className={cn(
+                                "text-2xl font-light transition-colors duration-500",
+                                isInParallax ? "text-purple-600" : "text-white"
+                            )}>B</span>
                         </div>
-                        <span className="text-2xl font-light text-gray-900 tracking-wide">
+                        <span className={cn(
+                            "text-2xl font-light tracking-wide transition-colors duration-500",
+                            isInParallax ? "text-white drop-shadow-lg" : "text-gray-900"
+                        )}>
                             BIZNEEL
                         </span>
                     </Link>
@@ -85,10 +96,18 @@ export function Header() {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="px-4 py-2 text-sm font-light text-gray-700 hover:text-purple-600 transition-colors relative group"
+                                className={cn(
+                                    "px-4 py-2 text-sm font-light transition-colors relative group",
+                                    isInParallax 
+                                        ? "text-white drop-shadow-md hover:text-purple-200" 
+                                        : "text-gray-700 hover:text-purple-600"
+                                )}
                             >
                                 {link.label}
-                                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-600 group-hover:w-full transition-all duration-300"></span>
+                                <span className={cn(
+                                    "absolute bottom-0 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300",
+                                    isInParallax ? "bg-white" : "bg-purple-600"
+                                )}></span>
                             </Link>
                         ))}
                     </nav>
@@ -97,7 +116,12 @@ export function Header() {
                     <div className="hidden md:flex items-center">
                         <Link
                             href="/contact"
-                            className="px-8 py-3 bg-purple-600 text-white text-sm tracking-wider uppercase font-light hover:bg-purple-700 transition-all duration-300 shadow-sm hover:shadow-md hover:scale-[1.02]"
+                            className={cn(
+                                "px-8 py-3 text-sm tracking-wider uppercase font-light transition-all duration-500 shadow-sm hover:shadow-md hover:scale-[1.02]",
+                                isInParallax
+                                    ? "bg-white/90 backdrop-blur-sm text-purple-600 hover:bg-white"
+                                    : "bg-purple-600 text-white hover:bg-purple-700"
+                            )}
                         >
                             Get Quote
                         </Link>
@@ -105,7 +129,10 @@ export function Header() {
 
                     {/* Mobile Menu Button */}
                     <button
-                        className="md:hidden relative z-50 p-2 text-gray-700 focus:outline-none"
+                        className={cn(
+                            "md:hidden relative z-50 p-2 focus:outline-none transition-colors duration-500",
+                            isInParallax ? "text-white" : "text-gray-700"
+                        )}
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         aria-label="Toggle menu"
                     >
