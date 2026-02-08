@@ -1,8 +1,12 @@
 "use client"
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Container } from "@/components/layout/container";
+import { categories } from "@/data/categories";
+import { products } from "@/data/products";
+import { formatPrice } from "@/lib/utils";
 
- const metadata: Metadata = {
+const metadata: Metadata = {
     title: "Products - BIZNEEL Professional Care",
     description:
         "Browse our complete collection of professional hair and skin care products. Salon-grade formulations for everyday use.",
@@ -13,93 +17,11 @@ import { Container } from "@/components/layout/container";
  * Minimal & Elegant Design with Brand Colors
  */
 export default function ProductsPage() {
-    const categories = [
-        {
-            name: "Hair Care",
-            description: "Professional shampoos for scalp and hair cleansing",
-            count: 2,
-        },
-        {
-            name: "Skin Care",
-            description: "Massage creams, scrub, and moisturizer for complete skin nourishment",
-            count: 6,
-        },
-    ];
-
-    const products = [
-        {
-            id: 1,
-            category: "Hair Care",
-            name: "Rice Water Shampoo",
-            size: "300 ml",
-            price: "₹245",
-            description: "Gentle scalp cleansing with rice water + glycerin",
-            features: ["For All Hair Type", "Scalp and Hair gentle cleanse", "Professional Shampoo"],
-        },
-        {
-            id: 2,
-            category: "Hair Care",
-            name: "Aloe Vera Shampoo",
-            size: "300 ml",
-            price: "₹195",
-            description: "Mild cleansing with aloe vera for scalp comfort",
-            features: ["For All Hair Type", "Scalp and Hair gentle cleanse", "Professional Shampoo"],
-        },
-        {
-            id: 3,
-            category: "Skin Care",
-            name: "Papaya Massage Cream",
-            size: "250 gm",
-            price: "₹245",
-            description: "Helps remove dead skin cells and supports skin freshness",
-            features: ["Face & Body", "Exfoliating", "Skin Freshness"],
-        },
-        {
-            id: 4,
-            category: "Skin Care",
-            name: "Aloe Vera Massage Cream",
-            size: "250 gm",
-            price: "₹245",
-            description: "Helps soothe skin and provide moisture during massage",
-            features: ["Soothing", "Moisturizing", "All Skin Types"],
-        },
-        {
-            id: 5,
-            category: "Skin Care",
-            name: "Vitamin-C Massage Cream",
-            size: "250 gm",
-            price: "₹245",
-            description: "Helps brighten skin appearance and support skin vitality",
-            features: ["Brightening", "Vitality Boost", "Radiant Skin"],
-        },
-        {
-            id: 6,
-            category: "Skin Care",
-            name: "Cocoa Butter Massage Cream",
-            size: "250 gm",
-            price: "₹245",
-            description: "Deep nourishment with rich texture for dry skin",
-            features: ["Deep Moisturizing", "Rich Texture", "Dry to Normal Skin"],
-        },
-        {
-            id: 7,
-            category: "Skin Care",
-            name: "Walnut Scrub",
-            size: "250 gm",
-            price: "₹245",
-            description: "Exfoliates and refreshes skin texture",
-            features: ["Face & Body", "Dead Skin Removal", "Improved Texture"],
-        },
-        {
-            id: 8,
-            category: "Skin Care",
-            name: "Almond Oil & Vitamin-E Moisturiser",
-            size: "200 gm",
-            price: "₹145",
-            description: "Daily hydration for soft, smooth skin",
-            features: ["Non-Heavy Formula", "Daily Use", "Moisture Retention"],
-        },
-    ];
+    // Group products by category for display
+    const categoryStats = categories.map(cat => ({
+        ...cat,
+        count: products.filter(p => p.category === cat.id).length
+    }));
 
     return (
         <>
@@ -134,9 +56,9 @@ export default function ProductsPage() {
                         </span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                        {categories.map((category, index) => (
+                        {categoryStats.map((category, index) => (
                             <div
-                                key={index}
+                                key={category.id}
                                 className="group bg-gradient-to-br from-purple-50/50 to-white p-10 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-700 animate-fade-in opacity-0"
                                 style={{
                                     animationDelay: `${index * 0.2}s`,
@@ -179,61 +101,51 @@ export default function ProductsPage() {
                         {products.map((product, index) => (
                             <div
                                 key={product.id}
-                                className="group bg-white hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-700 overflow-hidden animate-fade-in opacity-0"
+                                className="group bg-white rounded-xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
                                 style={{
                                     animationDelay: `${index * 0.1}s`,
                                     animationFillMode: 'forwards'
                                 }}
                             >
-                                {/* Product Image Placeholder */}
-                                <div className="relative h-64 bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center overflow-hidden">
-                                    <div className="absolute inset-0 bg-purple-600/5"></div>
-                                    <div className="relative z-10 text-center">
-                                        <div className="w-20 h-20 mx-auto mb-4 bg-white rounded-full flex items-center justify-center shadow-lg">
-                                            <div className="w-3 h-3 bg-purple-600 rounded-full"></div>
-                                        </div>
-                                        <span className="text-xs uppercase tracking-widest text-purple-600 font-light">
-                                            {product.category}
-                                        </span>
-                                    </div>
+                                {/* Product Image */}
+                                <div className="relative aspect-square bg-[#F9F9F9] overflow-hidden">
+                                    <Image
+                                        src={product.image}
+                                        alt={product.name}
+                                        fill
+                                        className="object-contain p-8 transition-transform duration-500 group-hover:scale-110"
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                    />
                                 </div>
 
                                 {/* Product Details */}
-                                <div className="p-8">
-                                    <div className="mb-4">
-                                        <div className="flex justify-between items-start mb-2">
-                                            <h3 className="text-xl font-normal text-gray-900 leading-tight pr-2">
-                                                {product.name}
-                                            </h3>
-                                            <span className="text-2xl font-light text-purple-600 whitespace-nowrap">
-                                                {product.price}
-                                            </span>
-                                        </div>
-                                        <p className="text-sm text-gray-400 font-light">{product.size}</p>
-                                    </div>
+                                <div className="p-6 text-center">
+                                    <h3 className="text-lg font-medium text-slate-900 mb-1">
+                                        {product.name}
+                                    </h3>
 
-                                    <p className="text-sm text-gray-600 font-light leading-relaxed mb-6">
-                                        {product.description}
+                                    <p className="text-xs text-slate-500 uppercase tracking-wide mb-3">
+                                        {product.size}
                                     </p>
 
-                                    {/* Features */}
-                                    <div className="flex flex-wrap gap-2 mb-6">
-                                        {product.features.map((feature, idx) => (
-                                            <span
-                                                key={idx}
-                                                className="text-xs px-3 py-1 bg-purple-50 text-purple-700 rounded-full font-light"
-                                            >
-                                                {feature}
-                                            </span>
-                                        ))}
+                                    <div className="flex items-center justify-center gap-2 mb-4">
+                                        <span className="text-base font-bold text-slate-900">
+                                            {formatPrice(product.price)}
+                                        </span>
                                     </div>
 
-                                    {/* CTA */}
+                                    {/* Action Button */}
                                     <a
-                                        href="/contact"
-                                        className="inline-block text-sm text-purple-600 font-light tracking-wide hover:tracking-widest transition-all group-hover:text-purple-700"
+                                        href={`https://wa.me/919104221284?text=${encodeURIComponent(`Hi, I would like to inquire about ${product.name}`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
                                     >
-                                        Get Quote →
+                                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" aria-hidden="true">
+                                            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.005.575 1.913.923 3.205.923 3.197 0 5.778-2.586 5.78-5.766.002-3.186-2.584-5.772-5.78-5.772zm2.062 8.326c-.199.317-.991 1.129-1.373 1.137-.306.007-1.164-.298-2.316-1.554-1.002-1.077-1.295-1.95-1.286-2.28.012-.486.634-1.155.845-1.155.087 0 .205.006.291.01.127.006.237-.024.417.408.204.475.467 1.158.508 1.25.04.093.076.216.035.318-.088.225-.213.313-.417.518-.095.094-.194.19-.084.382.111.192.483.788 1.047 1.288.729.646 1.348.847 1.54.942.191.096.305.076.417-.052.176-.2.457-.648.599-.861.125-.192.29-.148.471-.094.177.065 1.128.532 1.32.628.192.096.321.144.368.224.047.08.047.464-.197.777z" />
+                                            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S16.627 0 12 0zm0 22c-3.111 0-6.027-1.15-8.293-3.155l-2.007.514.536-1.956C.667 15.341-.004 12.696.004 12.016.028 5.399 5.405.023 12.022.023c6.611 0 11.977 5.366 11.977 11.977 0 6.611-5.366 11.977-11.977 11.977z" />
+                                        </svg>
+                                        Inquire
                                     </a>
                                 </div>
                             </div>

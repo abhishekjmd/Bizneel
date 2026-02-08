@@ -74,12 +74,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {/* Product Images */}
                         <div className="space-y-4">
-                            <div className="relative aspect-square rounded-xl overflow-hidden bg-slate-100">
+                            <div className="relative aspect-square overflow-hidden bg-[#F9F9F9]">
                                 <Image
                                     src={product.image}
                                     alt={product.name}
                                     fill
-                                    className="object-cover"
+                                    className="object-contain p-8"
                                     priority
                                     sizes="(max-width: 1024px) 100vw, 50vw"
                                 />
@@ -89,7 +89,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                                     {product.images.slice(1, 4).map((img, idx) => (
                                         <div
                                             key={idx}
-                                            className="relative aspect-square rounded-lg overflow-hidden bg-slate-100"
+                                            className="relative aspect-square overflow-hidden bg-[#F9F9F9]"
                                         >
                                             <Image
                                                 src={img}
@@ -143,11 +143,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
                             </div>
 
                             {/* CTA */}
-                            <Link href="/contact">
-                                <Button size="lg" className="w-full sm:w-auto">
-                                    Request a Quote
-                                </Button>
-                            </Link>
+                            <a
+                                href={`https://wa.me/919104221284?text=${encodeURIComponent(`Hi, I would like to inquire about ${product.name}`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-black text-white text-sm uppercase tracking-widest hover:bg-gray-800 transition-all w-full sm:w-auto rounded-lg"
+                            >
+                                <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true">
+                                    <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.005.575 1.913.923 3.205.923 3.197 0 5.778-2.586 5.78-5.766.002-3.186-2.584-5.772-5.78-5.772zm2.062 8.326c-.199.317-.991 1.129-1.373 1.137-.306.007-1.164-.298-2.316-1.554-1.002-1.077-1.295-1.95-1.286-2.28.012-.486.634-1.155.845-1.155.087 0 .205.006.291.01.127.006.237-.024.417.408.204.475.467 1.158.508 1.25.04.093.076.216.035.318-.088.225-.213.313-.417.518-.095.094-.194.19-.084.382.111.192.483.788 1.047 1.288.729.646 1.348.847 1.54.942.191.096.305.076.417-.052.176-.2.457-.648.599-.861.125-.192.29-.148.471-.094.177.065 1.128.532 1.32.628.192.096.321.144.368.224.047.08.047.464-.197.777z" />
+                                    <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S16.627 0 12 0zm0 22c-3.111 0-6.027-1.15-8.293-3.155l-2.007.514.536-1.956C.667 15.341-.004 12.696.004 12.016.028 5.399 5.405.023 12.022.023c6.611 0 11.977 5.366 11.977 11.977 0 6.611-5.366 11.977-11.977 11.977z" />
+                                </svg>
+                                Inquire on WhatsApp
+                            </a>
                         </div>
                     </div>
                 </Container>

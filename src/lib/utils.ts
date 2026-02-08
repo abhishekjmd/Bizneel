@@ -11,16 +11,16 @@ export function cn(...inputs: ClassValue[]): string {
 }
 
 /**
- * Formats price in USD currency
- * @param price - Price in cents or dollars
- * @param inCents - Whether price is in cents (default: false)
+ * Formats price in INR currency
+ * @param price - Price in paise or rupees
+ * @param inPaise - Whether price is in paise (default: false)
  * @returns Formatted price string
  */
-export function formatPrice(price: number, inCents = false): string {
-  const amount = inCents ? price / 100 : price;
-  return new Intl.NumberFormat("en-US", {
+export function formatPrice(price: number, inPaise = false): string {
+  const amount = inPaise ? price / 100 : price;
+  return new Intl.NumberFormat("en-IN", {
     style: "currency",
-    currency: "USD",
+    currency: "INR",
   }).format(amount);
 }
 

@@ -19,7 +19,8 @@ export const ingredients: Ingredient[] = [
     id: "hyaluronic-acid",
     name: "Hyaluronic Acid",
     scientificName: "Sodium Hyaluronate",
-    description: "A powerful humectant that can hold up to 1000x its weight in water, providing intense hydration.",
+    description:
+      "A powerful humectant that can hold up to 1000x its weight in water, providing intense hydration.",
     benefits: [
       "Deep hydration",
       "Plumps fine lines",
@@ -33,7 +34,8 @@ export const ingredients: Ingredient[] = [
     id: "vitamin-c",
     name: "Vitamin C",
     scientificName: "Ascorbic Acid",
-    description: "A potent antioxidant that brightens skin and protects against environmental damage.",
+    description:
+      "A potent antioxidant that brightens skin and protects against environmental damage.",
     benefits: [
       "Brightens complexion",
       "Reduces dark spots",
@@ -47,7 +49,8 @@ export const ingredients: Ingredient[] = [
     id: "niacinamide",
     name: "Niacinamide",
     scientificName: "Vitamin B3",
-    description: "A versatile ingredient that addresses multiple skin concerns from pores to pigmentation.",
+    description:
+      "A versatile ingredient that addresses multiple skin concerns from pores to pigmentation.",
     benefits: [
       "Minimizes pores",
       "Regulates oil production",
@@ -61,7 +64,8 @@ export const ingredients: Ingredient[] = [
     id: "retinol",
     name: "Retinol",
     scientificName: "Vitamin A",
-    description: "A gold-standard anti-aging ingredient that accelerates cell turnover.",
+    description:
+      "A gold-standard anti-aging ingredient that accelerates cell turnover.",
     benefits: [
       "Reduces fine lines",
       "Improves skin texture",
@@ -74,7 +78,8 @@ export const ingredients: Ingredient[] = [
   {
     id: "squalane",
     name: "Squalane",
-    description: "A lightweight, non-comedogenic oil that mimics skin's natural sebum.",
+    description:
+      "A lightweight, non-comedogenic oil that mimics skin's natural sebum.",
     benefits: [
       "Deep moisturization",
       "Non-greasy texture",

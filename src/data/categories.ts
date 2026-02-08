@@ -11,57 +11,41 @@ export interface Category {
 }
 
 /**
- * Static product categories for the cosmetics catalog
+ * Static product categories for BIZNEEL catalog
  * These categories are used for navigation and product filtering
  */
 export const categories: Category[] = [
   {
-    id: "cleansers",
-    name: "Cleansers",
-    slug: "cleansers",
-    description: "Gentle, effective cleansers for all skin types",
-    image: "/images/categories/cleansers.jpg",
+    id: "hair-care",
+    name: "Hair Care",
+    slug: "hair-care",
+    description: "Professional shampoos for scalp and hair cleansing",
+    image: "/riceWsterShampoo.jpeg",
+    featured: true,
+  },
+  {
+    id: "massage-creams",
+    name: "Massage Creams",
+    slug: "massage-creams",
+    description: "Rich massage creams for skin nourishment and vitality",
+    image: "/vitaminCMessageCream.png",
+    featured: true,
+  },
+  {
+    id: "scrubs",
+    name: "Scrubs",
+    slug: "scrubs",
+    description: "Exfoliating scrubs to refresh and improve skin texture",
+    image: "/wallnutScrub.png",
     featured: true,
   },
   {
     id: "moisturizers",
     name: "Moisturizers",
     slug: "moisturizers",
-    description: "Hydrating formulas for radiant, healthy skin",
-    image: "/images/categories/moisturizers.jpg",
+    description: "Hydrating creams for soft and smooth skin",
+    image: "/WhatsApp Image 2026-01-18 at 1.02.00 AM.jpeg",
     featured: true,
-  },
-  {
-    id: "serums",
-    name: "Serums",
-    slug: "serums",
-    description: "Concentrated treatments targeting specific skin concerns",
-    image: "/images/categories/serums.jpg",
-    featured: true,
-  },
-  {
-    id: "masks",
-    name: "Face Masks",
-    slug: "masks",
-    description: "Intensive treatments for deep nourishment",
-    image: "/images/categories/masks.jpg",
-    featured: true,
-  },
-  {
-    id: "suncare",
-    name: "Sun Care",
-    slug: "suncare",
-    description: "Broad-spectrum protection for daily defense",
-    image: "/images/categories/suncare.jpg",
-    featured: false,
-  },
-  {
-    id: "bodycare",
-    name: "Body Care",
-    slug: "bodycare",
-    description: "Luxurious care from head to toe",
-    image: "/images/categories/bodycare.jpg",
-    featured: false,
   },
 ];
 
