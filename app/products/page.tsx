@@ -270,19 +270,23 @@ export default function ProductsPage() {
                         View Details
                       </Link>
                       <a
-                        href={`https://wa.me/919104221284?text=${encodeURIComponent(`Hi, I would like to inquire about ${product.name}`)}`}
+                        href={`https://wa.me/919104221284?text=${encodeURIComponent(
+                          `Hi, I would like to inquire about ${product.name}`,
+                        )}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="px-4 py-3 border-2 border-purple-200 text-purple-600 text-sm font-medium rounded-xl hover:bg-purple-50 hover:border-purple-400 transition-all duration-500 hover:scale-105 transform flex items-center justify-center"
                         title="Inquire on WhatsApp"
                       >
-                        <svg
-                          viewBox="0 0 24 24"
-                          className="w-5 h-5 fill-current"
-                          aria-hidden="true"
-                        >
-                          <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.005.575 1.913.923 3.205.923 3.197 0 5.778-2.586 5.78-5.766.002-3.186-2.584-5.772-5.78-5.772zm2.062 8.326c-.199.317-.991 1.129-1.373 1.137-.306.007-1.164-.298-2.316-1.554-1.002-1.077-1.295-1.95-1.286-2.28.012-.486.634-1.155.845-1.155.087 0 .205.006.291.01.127.006.237-.024.417.408.204.475.467 1.158.508 1.25.04.093.076.216.035.318-.088.225-.213.313-.417.518-.095.094-.194.19-.084.382.111.192.483.788 1.047 1.288.729.646 1.348.847 1.54.942.191.096.305.076.417-.052.176-.2.457-.648.599-.861.125-.192.29-.148.471-.094.177.065 1.128.532 1.32.628.192.096.321.144.368.224.047.08.047.464-.197.777z" />
-                        </svg>
+                        <Image
+                          src="/whatsapp.png"
+                          alt="WhatsApp"
+                          width={24}
+                          height={24}
+                          sizes="(max-width: 768px) 20px, 24px"
+                          className="w-5 h-5 md:w-6 md:h-6 object-contain"
+                          priority={false}
+                        />
                       </a>
                     </div>
                   </div>
