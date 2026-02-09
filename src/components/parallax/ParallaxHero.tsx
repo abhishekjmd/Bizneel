@@ -17,169 +17,129 @@ export function ParallaxHero({
 }: ParallaxHeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const rafRef = useRef<number | null>(null);
+  const lastFrameRef = useRef<number>(-1);
 
   const [images, setImages] = useState<HTMLImageElement[]>([]);
   const [imagesLoaded, setImagesLoaded] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [loadError, setLoadError] = useState<string | null>(null);
   const [currentFrame, setCurrentFrame] = useState(0);
 
-  /* -------------------------------------------------------------------------- */
-  /*                               LOAD IMAGES                                   */
-  /* -------------------------------------------------------------------------- */
+  /* ----------------------------- LOAD IMAGES ----------------------------- */
   useEffect(() => {
-    const loadedImages: HTMLImageElement[] = [];
-    let loadedCount = 0;
-    let errorCount = 0;
+    const imgs: HTMLImageElement[] = [];
+    let loaded = 0;
 
     for (let i = 1; i <= totalFrames; i++) {
       const img = new Image();
-      const paddedNumber = String(i).padStart(3, "0");
-      img.src = `${framesFolder}/${filePrefix}${paddedNumber}.${fileExtension}`;
-
+      const num = String(i).padStart(3, "0");
+      img.src = `${framesFolder}/${filePrefix}${num}.${fileExtension}`;
       img.onload = () => {
-        loadedCount++;
-        setLoadingProgress(Math.round((loadedCount / totalFrames) * 100));
-        if (loadedCount === totalFrames) setImagesLoaded(true);
+        loaded++;
+        if (loaded === totalFrames) setImagesLoaded(true);
       };
-
-      img.onerror = () => {
-        errorCount++;
-        loadedCount++;
-        setLoadingProgress(Math.round((loadedCount / totalFrames) * 100));
-        if (loadedCount === totalFrames && errorCount === totalFrames) {
-          setLoadError("Could not load parallax images.");
-        } else if (loadedCount === totalFrames) {
-          setImagesLoaded(true);
-        }
-      };
-
-      loadedImages.push(img);
+      imgs.push(img);
     }
 
-    setImages(loadedImages);
-  }, [framesFolder, totalFrames, fileExtension, filePrefix]);
+    setImages(imgs);
+  }, [totalFrames, framesFolder, fileExtension, filePrefix]);
 
-  /* -------------------------------------------------------------------------- */
-  /*                             SCROLL HANDLER                                  */
-  /* -------------------------------------------------------------------------- */
+  /* ------------------------- SCROLL (RAF SYNCED) -------------------------- */
   useEffect(() => {
     if (!imagesLoaded || !containerRef.current) return;
 
     const handleScroll = () => {
-      const container = containerRef.current!;
-      const rect = container.getBoundingClientRect();
-      const containerHeight = container.clientHeight;
-      const viewportHeight = document.documentElement.clientHeight;
+      if (rafRef.current !== null) return;
 
-      const scrollStart = rect.top;
-      const scrollRange = containerHeight - viewportHeight;
+      rafRef.current = requestAnimationFrame(() => {
+        rafRef.current = null;
 
-      const scrollProgress = Math.max(
-        0,
-        Math.min(1, -scrollStart / scrollRange),
-      );
+        const container = containerRef.current!;
+        const rect = container.getBoundingClientRect();
+        const containerHeight = container.clientHeight;
+        const viewportHeight = document.documentElement.clientHeight;
 
-      const frameIndex = Math.min(
-        Math.floor(scrollProgress * totalFrames),
-        totalFrames - 1,
-      );
+        const scrollRange = containerHeight - viewportHeight;
+        const progress = Math.max(0, Math.min(1, -rect.top / scrollRange));
 
-      setCurrentFrame(frameIndex);
+        const frame = Math.min(
+          Math.floor(progress * totalFrames),
+          totalFrames - 1,
+        );
+
+        if (frame !== lastFrameRef.current) {
+          lastFrameRef.current = frame;
+          setCurrentFrame(frame);
+        }
+      });
     };
 
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
   }, [imagesLoaded, totalFrames]);
 
-  /* -------------------------------------------------------------------------- */
-  /*                             CANVAS RENDER                                   */
-  /* -------------------------------------------------------------------------- */
+  /* ---------------------------- CANVAS DRAW ------------------------------- */
   useEffect(() => {
-    if (!imagesLoaded || !canvasRef.current || images.length === 0) return;
+    if (!imagesLoaded || !canvasRef.current) return;
 
     const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    if (!context) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
     const img = images[currentFrame];
-    if (!img || !img.complete || img.naturalWidth === 0) return;
+    if (!img || !img.complete) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const displayWidth = window.innerWidth;
-    const displayHeight = document.documentElement.clientHeight;
+    const isMobile = window.innerWidth < 768;
+    const dpr = isMobile
+      ? window.devicePixelRatio || 1
+      : Math.min(window.devicePixelRatio || 1, 2);
 
-    canvas.width = displayWidth * dpr;
-    canvas.height = displayHeight * dpr;
-    canvas.style.width = `${displayWidth}px`;
-    canvas.style.height = `${displayHeight}px`;
+    const width = window.innerWidth;
+    const height = document.documentElement.clientHeight;
 
-    context.setTransform(dpr, 0, 0, dpr, 0, 0);
-    context.clearRect(0, 0, displayWidth, displayHeight);
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
 
-    context.imageSmoothingEnabled = true;
-    context.imageSmoothingQuality = "high";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
 
     const imgAspect = img.naturalWidth / img.naturalHeight;
-    const canvasAspect = displayWidth / displayHeight;
+    const screenAspect = width / height;
 
-    let drawWidth: number;
-    let drawHeight: number;
-    let offsetX = 0;
-    let offsetY = 0;
+    let drawW: number;
+    let drawH: number;
 
-    if (canvasAspect > imgAspect) {
-      drawWidth = displayWidth;
-      drawHeight = drawWidth / imgAspect;
-      offsetY = (displayHeight - drawHeight) / 2;
+    if (screenAspect > imgAspect) {
+      drawW = width;
+      drawH = width / imgAspect;
     } else {
-      drawHeight = displayHeight;
-      drawWidth = drawHeight * imgAspect;
-      offsetX = (displayWidth - drawWidth) / 2;
+      drawH = height;
+      drawW = height * imgAspect;
     }
 
-    context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-  }, [images, imagesLoaded, currentFrame]);
+    const x = (width - drawW) / 2;
+    const y = (height - drawH) / 2;
 
-  /* -------------------------------------------------------------------------- */
-  /*                                 RESIZE                                      */
-  /* -------------------------------------------------------------------------- */
-  useEffect(() => {
-    if (!imagesLoaded) return;
-    const handleResize = () => setCurrentFrame((prev) => prev);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, [imagesLoaded]);
+    ctx.drawImage(img, x, y, drawW, drawH);
+  }, [currentFrame, imagesLoaded, images]);
 
-  /* -------------------------------------------------------------------------- */
-  /*                                   ERROR                                     */
-  /* -------------------------------------------------------------------------- */
-  if (loadError) {
-    return (
-      <div className="relative h-[100svh] flex items-center justify-center">
-        {loadError}
-      </div>
-    );
-  }
-
-  /* -------------------------------------------------------------------------- */
-  /*                                   RENDER                                    */
-  /* -------------------------------------------------------------------------- */
+  /* ------------------------------- RENDER -------------------------------- */
   return (
     <div ref={containerRef} className="relative h-[400vh] w-full">
-      <div className="sticky top-0 h-[100svh] w-full overflow-hidden z-10">
+      <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
         <canvas
           ref={canvasRef}
           className="absolute inset-0 w-full h-[100svh]"
           style={{ display: "block" }}
         />
-
-        {!imagesLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black">
-            <div className="text-white text-sm">Loading {loadingProgress}%</div>
-          </div>
-        )}
       </div>
     </div>
   );
