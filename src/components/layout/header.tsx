@@ -56,11 +56,7 @@ export function Header() {
         <header
             className={cn(
                 "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500",
-                isInParallax
-                    ? "bg-transparent border-transparent"
-                    : isScrolled
-                    ? "border-b border-purple-100 bg-white/95 backdrop-blur-lg shadow-sm"
-                    : "border-b border-transparent bg-white/80 backdrop-blur-md"
+                "bg-transparent border-transparent"
             )}
         >
             <Container>
@@ -68,26 +64,19 @@ export function Header() {
                     {/* Logo */}
                     <Link
                         href="/"
-                        className="flex items-center gap-3 z-50 relative group"
+                        className="flex items-center z-50 relative group"
                         onClick={() => setIsMobileMenuOpen(false)}
                     >
-                        <div className={cn(
-                            "relative w-12 h-12 rounded-full overflow-hidden flex items-center justify-center group-hover:scale-110 transition-all duration-500",
-                            isInParallax 
-                                ? "bg-white/90 backdrop-blur-sm shadow-lg" 
-                                : "bg-gradient-to-br from-purple-500 to-purple-600"
-                        )}>
-                            <span className={cn(
-                                "text-2xl font-light transition-colors duration-500",
-                                isInParallax ? "text-purple-600" : "text-white"
-                            )}>B</span>
+                        <div className="relative h-20 w-auto group-hover:scale-105 transition-transform duration-500">
+                            <Image
+                                src="/previewLogo.png"
+                                alt="BIZNEEL Logo"
+                                width={240}
+                                height={80}
+                                className="h-20 w-auto object-contain transition-all duration-500 drop-shadow-[0_2px_8px_rgba(255,255,255,0.8)]"
+                                priority
+                            />
                         </div>
-                        <span className={cn(
-                            "text-2xl font-light tracking-wide transition-colors duration-500",
-                            isInParallax ? "text-white drop-shadow-lg" : "text-gray-900"
-                        )}>
-                            BIZNEEL
-                        </span>
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -100,7 +89,7 @@ export function Header() {
                                     "px-4 py-2 text-sm font-light transition-colors relative group",
                                     isInParallax 
                                         ? "text-white drop-shadow-md hover:text-purple-200" 
-                                        : "text-gray-700 hover:text-purple-600"
+                                        : "text-white hover:text-purple-600"
                                 )}
                             >
                                 {link.label}
