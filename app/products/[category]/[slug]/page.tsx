@@ -11,7 +11,7 @@ import { formatPrice, cn } from "@/lib/utils";
 import { getProductBySlug } from "@/data/products";
 import { getIngredientById } from "@/data/ingredients";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkle } from "lucide-react";
 
 /**
  * Product detail page - Premium 3D Design (Client Component)
@@ -145,7 +145,11 @@ export default function ProductPage() {
             >
               {/* Main Image Carousel */}
               <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-white to-purple-50/30 rounded-3xl border border-purple-100/50 shadow-xl group">
-                <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+                <AnimatePresence
+                  mode="popLayout"
+                  custom={direction}
+                  initial={false}
+                >
                   <motion.div
                     key={activeImageIndex}
                     custom={direction}
@@ -212,7 +216,7 @@ export default function ProductPage() {
                         "relative flex-shrink-0 w-24 h-24 overflow-hidden rounded-2xl border transition-all duration-500",
                         activeImageIndex === idx
                           ? "border-purple-600 shadow-lg ring-2 ring-purple-600/20 scale-105"
-                          : "border-purple-100/50 opacity-60 hover:opacity-100 hover:border-purple-300"
+                          : "border-purple-100/50 opacity-60 hover:opacity-100 hover:border-purple-300",
                       )}
                     >
                       <Image
@@ -241,7 +245,7 @@ export default function ProductPage() {
                       variant="info"
                       className="bg-purple-100 text-purple-700 border-purple-200"
                     >
-                      ✨ New
+                      <Sparkle size={25} /> New
                     </Badge>
                   )}
                   {product.badges &&
@@ -357,7 +361,7 @@ export default function ProductPage() {
                       >
                         <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
                           <span className="text-2xl font-light text-purple-600">
-                            ✨
+                            <Sparkle size={25} />
                           </span>
                         </div>
                         <p className="text-lg md:text-xl text-gray-800 font-light leading-relaxed group-hover:text-black transition-colors duration-500">
@@ -396,9 +400,23 @@ export default function ProductPage() {
                 >
                   <div>
                     <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-purple-600 text-white mb-8 shadow-xl shadow-purple-600/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                      <svg viewBox="0 0 24 24" className="w-10 h-10 fill-none stroke-current stroke-1.5" aria-hidden="true">
-                        <path d="M12 2v20m10-10H2" strokeLinecap="round" strokeLinejoin="round" />
-                        <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="w-10 h-10 fill-none stroke-current stroke-1.5"
+                        aria-hidden="true"
+                      >
+                        <path
+                          d="M12 2v20m10-10H2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <circle
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </div>
                     <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 leading-tight">
@@ -498,7 +516,6 @@ export default function ProductPage() {
           transition: transform 0.3s ease-out;
           transform-style: preserve-3d;
         }
-
       `}</style>
     </>
   );
