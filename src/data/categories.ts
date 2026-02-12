@@ -15,20 +15,28 @@ export interface Category {
  * These categories are used for navigation and product filtering
  */
 export const categories: Category[] = [
-  {
-    id: "hair-care",
-    name: "Hair Care",
-    slug: "hair-care",
-    description: "Professional shampoos for scalp and hair cleansing",
-    image: "/riceWsterShampoo.jpeg",
-    featured: true,
-  },
+  // {
+  //   id: "hair-care",
+  //   name: "Hair Care",
+  //   slug: "hair-care",
+  //   description: "Professional shampoos for scalp and hair cleansing",
+  //   image: "/riceWsterShampoo.jpeg",
+  //   featured: true,
+  // },
   {
     id: "massage-creams",
     name: "Massage Creams",
     slug: "massage-creams",
     description: "Rich massage creams for skin nourishment and vitality",
     image: "/vitaminCMessageCream.png",
+    featured: true,
+  },
+  {
+    id: "shampoo",
+    name: "Shampoo",
+    slug: "shampoo",
+    description: "Cleansing and nourishing shampoos for all hair types",
+    image: "/riceWsterShampoo.jpeg",
     featured: true,
   },
   {
@@ -44,7 +52,7 @@ export const categories: Category[] = [
     name: "Moisturizers",
     slug: "moisturizers",
     description: "Hydrating creams for soft and smooth skin",
-    image: "/WhatsApp Image 2026-01-18 at 1.02.00 AM.jpeg",
+    image: "/images/categories/moisturiser/moisturiserOne.jpeg",
     featured: true,
   },
 ];

@@ -1,15 +1,17 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, cn } from "@/lib/utils";
 import { getProductBySlug } from "@/data/products";
 import { getIngredientById } from "@/data/ingredients";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 /**
  * Product detail page - Premium 3D Design (Client Component)
@@ -19,6 +21,38 @@ export default function ProductPage() {
   const params = useParams();
   const slug = params.slug as string;
   const product = getProductBySlug(slug);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  const slideVariants: any = {
+    enter: (direction: number) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+      scale: 0.95
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        x: { type: "spring" as const, stiffness: 300, damping: 30 },
+        opacity: { duration: 0.4 },
+        scale: { duration: 0.4 }
+      }
+    },
+    exit: (direction: number) => ({
+      zIndex: 0,
+      x: direction < 0 ? 300 : -300,
+      opacity: 0,
+      scale: 0.95,
+      transition: {
+        x: { type: "spring" as const, stiffness: 300, damping: 30 },
+        opacity: { duration: 0.4 },
+        scale: { duration: 0.4 }
+      }
+    })
+  };
 
   // 3D Mouse Movement Effect
   useEffect(() => {
@@ -44,7 +78,7 @@ export default function ProductPage() {
 
     const handleMouseLeave = (e: MouseEvent) => {
       const card = e.currentTarget as HTMLElement;
-      card.style.transform = `
+      (card as HTMLElement).style.transform = `
         perspective(1000px) 
         rotateX(0deg) 
         rotateY(0deg) 
@@ -82,51 +116,113 @@ export default function ProductPage() {
     );
   }
 
+  const images = product.images && product.images.length > 0 ? product.images : [product.image];
+
+  const nextImage = () => {
+    setDirection(1);
+    setActiveImageIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setDirection(-1);
+    setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   return (
     <>
       {/* Product Hero Section - 3D Immersive */}
-      <section className="relative py-16 md:py-24 bg-gradient-to-br from-purple-50 via-white to-purple-50 overflow-hidden">
+      <section className="relative pt-32 md:pt-40 pb-16 md:pb-24 bg-gradient-to-br from-purple-50 via-white to-purple-50 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-400/5 rounded-full blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/5 rounded-full blur-3xl"></div>
 
         <Container>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10">
-            {/* Product Images - Enhanced */}
+            {/* Product Images - Enhanced Carousel */}
             <div
-              className="space-y-4 animate-fade-in-up opacity-0"
+              className="space-y-6 animate-fade-in-up opacity-0"
               style={{ animationDelay: "0.2s", animationFillMode: "forwards" }}
             >
-              {/* Main Image */}
-              <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-white to-purple-50/30 rounded-3xl border border-purple-100/50 shadow-xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-700">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-contain p-8 transform group-hover:scale-105 transition-transform duration-500"
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                />
+              {/* Main Image Carousel */}
+              <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-white to-purple-50/30 rounded-3xl border border-purple-100/50 shadow-xl group">
+                <AnimatePresence mode="popLayout" custom={direction} initial={false}>
+                  <motion.div
+                    key={activeImageIndex}
+                    custom={direction}
+                    variants={slideVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exit"
+                    drag="x"
+                    dragConstraints={{ left: 0, right: 0 }}
+                    dragElastic={0.7}
+                    onDragEnd={(_, info) => {
+                      const swipe = info.offset.x;
+                      if (swipe < -50) {
+                        nextImage();
+                      } else if (swipe > 50) {
+                        prevImage();
+                      }
+                    }}
+                    className="absolute inset-0 cursor-grab active:cursor-grabbing touch-none"
+                  >
+                    <Image
+                      src={images[activeImageIndex]}
+                      alt={`${product.name} - ${activeImageIndex + 1}`}
+                      fill
+                      className="object-contain p-8 transform transition-transform duration-700 hover:scale-105 pointer-events-none"
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                  </motion.div>
+                </AnimatePresence>
+
+                {/* Navigation Buttons */}
+                {images.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 backdrop-blur-sm border border-purple-100 flex items-center justify-center text-purple-600 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 z-20 shadow-lg"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft size={24} />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/80 backdrop-blur-sm border border-purple-100 flex items-center justify-center text-purple-600 md:opacity-0 md:group-hover:opacity-100 opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 z-20 shadow-lg"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={24} />
+                    </button>
+                  </>
+                )}
+
                 {/* Shine overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-700"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
               </div>
 
-              {/* Thumbnail Images */}
-              {product.images && product.images.length > 1 && (
-                <div className="grid grid-cols-3 gap-4">
-                  {product.images.slice(1, 4).map((img, idx) => (
-                    <div
+              {/* Thumbnail Navigation */}
+              {images.length > 1 && (
+                <div className="flex gap-4 overflow-x-auto py-2 px-1 scrollbar-hide mt-8">
+                  {images.map((img, idx) => (
+                    <button
                       key={idx}
-                      className="relative aspect-square overflow-hidden bg-gradient-to-br from-white to-purple-50/30 rounded-2xl border border-purple-100/50 shadow-lg hover:shadow-xl hover:shadow-purple-500/15 transition-all duration-500 cursor-pointer group"
+                      onClick={() => setActiveImageIndex(idx)}
+                      className={cn(
+                        "relative flex-shrink-0 w-24 h-24 overflow-hidden rounded-2xl border transition-all duration-500",
+                        activeImageIndex === idx
+                          ? "border-purple-600 shadow-lg ring-2 ring-purple-600/20 scale-105"
+                          : "border-purple-100/50 opacity-60 hover:opacity-100 hover:border-purple-300"
+                      )}
                     >
                       <Image
                         src={img}
-                        alt={`${product.name} ${idx + 2}`}
+                        alt={`${product.name} thumbnail ${idx + 1}`}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-500"
-                        sizes="(max-width: 1024px) 33vw, 16vw"
+                        className="object-contain p-2"
+                        sizes="96px"
                       />
-                    </div>
+                    </button>
                   ))}
                 </div>
               )}
@@ -200,16 +296,16 @@ export default function ProductPage() {
                 href={`https://wa.me/919104221284?text=${encodeURIComponent(`Hi, I would like to inquire about ${product.name}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-sm uppercase tracking-widest font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-500 w-full sm:w-auto rounded-full shadow-lg hover:shadow-xl hover:shadow-purple-500/30 hover:scale-105 transform relative overflow-hidden group"
+                className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-sm uppercase tracking-widest font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-500 w-full sm:w-auto rounded-full shadow-lg hover:shadow-xl hover:shadow-purple-500/30 hover:scale-105 transform relative overflow-hidden group"
               >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-5 h-5 fill-current group-hover:scale-110 transition-transform duration-300"
-                  aria-hidden="true"
-                >
-                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.592 2.654-.696c1.005.575 1.913.923 3.205.923 3.197 0 5.778-2.586 5.78-5.766.002-3.186-2.584-5.772-5.78-5.772zm2.062 8.326c-.199.317-.991 1.129-1.373 1.137-.306.007-1.164-.298-2.316-1.554-1.002-1.077-1.295-1.95-1.286-2.28.012-.486.634-1.155.845-1.155.087 0 .205.006.291.01.127.006.237-.024.417.408.204.475.467 1.158.508 1.25.04.093.076.216.035.318-.088.225-.213.313-.417.518-.095.094-.194.19-.084.382.111.192.483.788 1.047 1.288.729.646 1.348.847 1.54.942.191.096.305.076.417-.052.176-.2.457-.648.599-.861.125-.192.29-.148.471-.094.177.065 1.128.532 1.32.628.192.096.321.144.368.224.047.08.047.464-.197.777z" />
-                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S16.627 0 12 0zm0 22c-3.111 0-6.027-1.15-8.293-3.155l-2.007.514.536-1.956C.667 15.341-.004 12.696.004 12.016.028 5.399 5.405.023 12.022.023c6.611 0 11.977 5.366 11.977 11.977 0 6.611-5.366 11.977-11.977 11.977z" />
-                </svg>
+                <Image
+                  src="/whatsapp.png"
+                  alt="WhatsApp"
+                  width={24}
+                  height={24}
+                  // className="w-5 h-5 md:w-6 md:h-6 object-contain filter brightness-0 invert"
+                  priority={false}
+                />
                 <span>Inquire on WhatsApp</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-full group-hover:translate-x-[-100%] transition-transform duration-1000"></div>
               </a>
@@ -239,41 +335,38 @@ export default function ProductPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 perspective-container">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 perspective-container">
               {product.benefits &&
                 product.benefits.map((benefit, idx) => (
                   <div
                     key={idx}
                     className="card-3d group animate-fade-in-up opacity-0"
                     style={{
-                      animationDelay: `${idx * 0.1}s`,
+                      animationDelay: `${idx * 0.15}s`,
                       animationFillMode: "forwards",
                       transformStyle: "preserve-3d",
                     }}
                   >
-                    <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-8 md:p-10 border border-purple-100/50 shadow-lg hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 overflow-hidden h-full">
-                      {/* 3D Background */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <div className="relative bg-white/80 backdrop-blur-md rounded-[2.5rem] p-10 md:p-12 border border-purple-100/40 shadow-xl hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-700 overflow-hidden h-full">
+                      {/* Subtle Background Pattern */}
+                      <div className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.05] transition-opacity duration-700 bg-[radial-gradient(circle_at_2px_2px,rgba(147,51,234,0.5)_1px,transparent_0)] bg-[size:24px_24px]"></div>
 
                       <div
-                        className="relative z-10 flex items-start gap-4"
-                        style={{ transform: "translateZ(30px)" }}
+                        className="relative z-10"
+                        style={{ transform: "translateZ(40px)" }}
                       >
-                        <div className="text-3xl font-light text-purple-600 mt-1 group-hover:scale-125 transition-transform duration-500 flex-shrink-0">
-                          ✓
+                        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                          <span className="text-2xl font-light text-purple-600">
+                            ✨
+                          </span>
                         </div>
-                        <p className="text-base md:text-lg text-gray-700 font-light leading-relaxed group-hover:text-gray-900 transition-colors duration-500">
+                        <p className="text-lg md:text-xl text-gray-800 font-light leading-relaxed group-hover:text-black transition-colors duration-500">
                           {benefit}
                         </p>
                       </div>
 
-                      {/* Shine Effect */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden rounded-3xl">
-                        <div className="absolute -inset-full top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:animate-shine"></div>
-                      </div>
-
-                      {/* 3D Glow */}
-                      <div className="absolute -inset-0.5 bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-10 blur-xl transition-all duration-700 -z-10"></div>
+                      {/* Corner Decoration */}
+                      <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-100/30 rounded-full blur-2xl group-hover:bg-purple-200/50 transition-all duration-700"></div>
                     </div>
                   </div>
                 ))}
@@ -288,7 +381,7 @@ export default function ProductPage() {
         <div className="absolute inset-0 bg-grid-pattern opacity-[0.02]"></div>
 
         <Container>
-          <div className="max-w-4xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             <div
               className="card-3d group animate-fade-in-up opacity-0"
               style={{
@@ -296,123 +389,36 @@ export default function ProductPage() {
                 transformStyle: "preserve-3d",
               }}
             >
-              <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-12 md:p-16 border border-purple-100/50 shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 overflow-hidden">
-                {/* 3D Background */}
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-
+              <div className="relative bg-gradient-to-br from-white to-purple-50 rounded-[3rem] p-12 md:p-20 border border-purple-100/60 shadow-2xl hover:shadow-purple-500/10 transition-all duration-700 overflow-hidden">
                 <div
-                  className="relative z-10"
-                  style={{ transform: "translateZ(40px)" }}
+                  className="relative z-10 grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-12 items-center"
+                  style={{ transform: "translateZ(50px)" }}
                 >
-                  <div className="mb-10">
-                    <h2 className="text-3xl md:text-5xl font-light text-gray-900 mb-4 group-hover:text-purple-600 transition-colors duration-500">
-                      How to Use
+                  <div>
+                    <div className="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-purple-600 text-white mb-8 shadow-xl shadow-purple-600/20 group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                      <svg viewBox="0 0 24 24" className="w-10 h-10 fill-none stroke-current stroke-1.5" aria-hidden="true">
+                        <path d="M12 2v20m10-10H2" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="12" cy="12" r="10" strokeLinecap="round" strokeLinejoin="round" />
+                      </svg>
+                    </div>
+                    <h2 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 leading-tight">
+                      Application <br />
+                      <span className="text-purple-600">Guide</span>
                     </h2>
-                    <div className="h-1 w-24 bg-gradient-to-r from-purple-400 via-purple-600 to-purple-400 rounded-full"></div>
+                    <div className="h-1.5 w-24 bg-purple-600 rounded-full"></div>
                   </div>
 
-                  <p className="text-base md:text-lg text-gray-600 font-light leading-relaxed">
-                    {product.howToUse}
-                  </p>
+                  <div className="bg-white/50 backdrop-blur-sm p-8 md:p-12 rounded-[2rem] border border-purple-100/50 shadow-inner">
+                    <p className="text-xl md:text-2xl text-gray-700 font-light leading-relaxed italic">
+                      " {product.howToUse} "
+                    </p>
+                  </div>
                 </div>
 
-                {/* Shine Effect */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden rounded-3xl">
-                  <div className="absolute -inset-full top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:animate-shine"></div>
-                </div>
-
-                {/* 3D Glow */}
-                <div className="absolute -inset-1 bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-10 blur-2xl transition-all duration-700 -z-10"></div>
+                {/* Decorative Elements */}
+                <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-200/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 -right-12 w-48 h-48 bg-purple-100/30 rounded-full blur-3xl"></div>
               </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      {/* Ingredients - 3D Grid */}
-      <section className="py-32 md:py-40 bg-gradient-to-b from-white via-purple-50/30 to-white relative overflow-hidden">
-        {/* Background Elements */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-100/30 rounded-full blur-3xl"></div>
-
-        <Container>
-          <div className="max-w-6xl mx-auto">
-            {/* Section Header */}
-            <div className="text-center mb-24 relative z-10">
-              <div className="inline-block">
-                <span className="text-sm tracking-[0.35em] uppercase text-purple-600 font-light mb-6 block animate-slide-down">
-                  Premium Formulation
-                </span>
-                <h2 className="text-4xl md:text-6xl font-light text-gray-900 max-w-3xl mx-auto leading-tight mb-4">
-                  Key Ingredients
-                </h2>
-                <div className="h-1 w-32 bg-gradient-to-r from-purple-400 via-purple-600 to-purple-400 mx-auto rounded-full"></div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 perspective-container mb-12">
-              {product.ingredients &&
-                product.ingredients.map((ingredientId, index) => {
-                  const ingredient = getIngredientById(ingredientId);
-                  if (!ingredient) return null;
-
-                  return (
-                    <div
-                      key={ingredientId}
-                      className="card-3d group animate-fade-in-up opacity-0"
-                      style={{
-                        animationDelay: `${index * 0.1}s`,
-                        animationFillMode: "forwards",
-                        transformStyle: "preserve-3d",
-                      }}
-                    >
-                      <div className="relative bg-white/90 backdrop-blur-sm rounded-3xl p-10 border border-purple-100/50 shadow-lg hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 h-full overflow-hidden">
-                        {/* 3D Background */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-50 via-white to-purple-50/50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-
-                        <div
-                          className="relative z-10"
-                          style={{ transform: "translateZ(30px)" }}
-                        >
-                          <h3 className="text-xl font-light text-gray-900 mb-4 group-hover:text-purple-600 transition-colors duration-500">
-                            {ingredient.name}
-                          </h3>
-                          <p className="text-sm text-gray-600 font-light leading-relaxed mb-6">
-                            {ingredient.description}
-                          </p>
-                          <div className="flex flex-wrap gap-2">
-                            {ingredient.certifications &&
-                              ingredient.certifications.map((cert) => (
-                                <Badge
-                                  key={cert}
-                                  variant="success"
-                                  className="text-xs bg-green-50 text-green-700 border-green-200"
-                                >
-                                  {cert}
-                                </Badge>
-                              ))}
-                          </div>
-                        </div>
-
-                        {/* Shine Effect */}
-                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none overflow-hidden rounded-3xl">
-                          <div className="absolute -inset-full top-0 left-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 group-hover:animate-shine"></div>
-                        </div>
-
-                        {/* 3D Glow */}
-                        <div className="absolute -inset-0.5 bg-gradient-to-br from-purple-400 via-purple-500 to-purple-600 rounded-3xl opacity-0 group-hover:opacity-10 blur-xl transition-all duration-700 -z-10"></div>
-                      </div>
-                    </div>
-                  );
-                })}
-            </div>
-
-            {/* CTA Button */}
-            <div className="text-center relative z-10">
-              <Link href="/ingredients">
-                <Button className="px-12 py-6 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-sm tracking-widest uppercase font-medium hover:from-purple-700 hover:to-purple-800 transition-all duration-500 rounded-full shadow-lg hover:shadow-xl hover:shadow-purple-500/30 hover:scale-105">
-                  Learn More About Our Ingredients
-                </Button>
-              </Link>
             </div>
           </div>
         </Container>
@@ -493,11 +499,6 @@ export default function ProductPage() {
           transform-style: preserve-3d;
         }
 
-        /* Smooth transforms */
-        * {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-        }
       `}</style>
     </>
   );

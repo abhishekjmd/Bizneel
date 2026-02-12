@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { useEffect } from "react";
+import { CheckLine, Heart } from "lucide-react";
 
 const metadata: Metadata = {
   title: "Certifications",
@@ -21,7 +22,7 @@ export default function CertificationsPage() {
       name: "FDAC Approved",
       description:
         "Our products meet the stringent quality and safety standards set by the Food & Drug Administration Controller, ensuring safe formulations for all hair and skin types.",
-      icon: "✓",
+      icon: CheckLine,
       gradient: "from-purple-500 to-purple-700",
     },
     {
@@ -29,7 +30,7 @@ export default function CertificationsPage() {
       name: "PETA-Free Certified",
       description:
         "100% cruelty-free commitment. None of our products or ingredients are tested on animals, and we never will. Ethical beauty you can feel good about.",
-      icon: "💚",
+      icon: Heart,
       gradient: "from-purple-600 to-purple-800",
     },
   ];
@@ -83,7 +84,7 @@ export default function CertificationsPage() {
   return (
     <>
       {/* Hero Section - 3D Immersive */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900">
+      <section className="relative min-h-[70vh] mt-20 flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900">
         {/* Animated 3D Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-500/20 rounded-full blur-3xl animate-blob"></div>
@@ -194,7 +195,7 @@ export default function CertificationsPage() {
                           className={`w-20 h-20 bg-gradient-to-br ${cert.gradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/50 transition-all duration-500 relative`}
                         >
                           <span className="text-3xl transform group-hover:scale-110 transition-transform duration-500">
-                            {cert.icon}
+                            <cert.icon size={35} color="white" />
                           </span>
                           <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         </div>
@@ -525,12 +526,6 @@ export default function CertificationsPage() {
         .transform-gpu {
           transform: translateZ(0);
           will-change: transform;
-        }
-
-        /* Smooth transforms */
-        * {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
         }
       `}</style>
     </>

@@ -221,7 +221,7 @@ export default function ProductsPage() {
                   transformStyle: "preserve-3d",
                 }}
               >
-                <div className="relative bg-white rounded-3xl overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 border border-purple-100/50 h-full transform-gpu">
+                <div className="relative bg-white overflow-hidden hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 border border-purple-100/50 h-full transform-gpu">
                   {/* Product Image with 3D Effect */}
                   <div className="relative w-full h-64 bg-gradient-to-br from-purple-50 via-white to-purple-50/50 overflow-hidden rounded-[10px]">
                     <div className="absolute inset-0 bg-gradient-to-br from-transparent to-purple-600/5 group-hover:to-purple-600/10 transition-all duration-700"></div>
@@ -265,7 +265,7 @@ export default function ProductsPage() {
                     <div className="flex gap-2">
                       <Link
                         href={`/products/${product.category}/${product.slug}`}
-                        className="flex-1 text-center px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-sm font-medium rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-500 shadow-lg hover:shadow-purple-500/50 hover:scale-105 transform"
+                        className="flex px-4 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-sm font-medium rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-500 shadow-lg hover:shadow-purple-500/50 hover:scale-105 transform justify-center items-center"
                       >
                         View Details
                       </Link>
@@ -519,11 +519,6 @@ export default function ProductsPage() {
           will-change: transform;
         }
 
-        /* Smooth transforms for better performance */
-        * {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-        }
       `}</style>
     </>
   );

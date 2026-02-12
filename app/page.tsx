@@ -3,62 +3,98 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Container } from "@/components/layout/container";
-import { ParallaxHero } from "@/components/parallax/ParallaxHero";
-import { ParallaxTextOverlays } from "@/components/parallax/ParallaxTextOverlays";
 import { getFeaturedCategories } from "@/data/categories";
 import { getFeaturedProducts } from "@/data/products";
 import { formatPrice } from "@/lib/utils";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Sparkles, Heart, Award, Leaf, ChevronDown } from "lucide-react";
 
 /**
  * Homepage - BIZNEEL Professional Care
- * Enhanced 3D Scrollytelling Experience
+ * Enhanced 3D Video Hero Experience with Two-Level Category Navigation
  */
 export default function HomePage() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [activeMainCategory, setActiveMainCategory] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
   const features = [
     {
       title: "Professional-Grade Formulations",
       description: "Salon-quality products crafted for consistent performance",
-      icon: "💎",
+      icon: Award,
     },
     {
       title: "Suitable for All Hair & Skin Types",
       description: "Designed for every hair and skin type with care",
-      icon: "✨",
+      icon: Sparkles,
     },
     {
       title: "Salon & Home-Use Friendly",
       description: "Dependable results for professionals and everyday users",
-      icon: "🏆",
+      icon: Heart,
     },
     {
       title: "Clean, Practical Product Range",
       description: "Focused formulations without overpromising",
-      icon: "🌿",
+      icon: Leaf,
     },
   ];
 
-  const parallaxSections = [
+  // Two-level category structure
+  const categoryStructure = [
     {
-      title: "Professional Hair & Skin Care",
-      subtitle: "Experience the difference with salon-grade formulations",
+      id: "hair-care",
+      name: "Hair Care",
+      description: "Professional hair care solutions",
+      image: "/images/categories/hair-care.jpg",
+      subcategories: [
+        {
+          id: "shampoo",
+          name: "Shampoo",
+          description: "Cleansing and nourishing shampoos",
+          image: "/images/categories/shampoo.jpg",
+        },
+      ],
     },
     {
-      title: "Crafted with Care",
-      subtitle: "Premium ingredients for professional results",
-    },
-    {
-      title: "For Every Hair Type",
-      subtitle: "Customized solutions for your unique needs",
-    },
-    {
-      title: "You'll Feel The Difference",
-      subtitle: "Quality you can see and feel",
+      id: "skin-care",
+      name: "Skin Care",
+      description: "Premium skin care essentials",
+      image: "/images/categories/skin-care.jpg",
+      subcategories: [
+        {
+          id: "moisturiser",
+          name: "Moisturiser",
+          description: "Hydrating and protective moisturisers",
+          image: "/images/categories/moisturiser.jpg",
+        },
+        {
+          id: "scrub",
+          name: "Scrub",
+          description: "Exfoliating scrubs for radiant skin",
+          image: "/images/categories/scrub.jpg",
+        },
+        {
+          id: "massage-cream",
+          name: "Massage Cream",
+          description: "Nourishing massage creams",
+          image: "/images/categories/massage-cream.jpg",
+        },
+      ],
     },
   ];
 
-  const featuredCategories = getFeaturedCategories();
   const featuredProducts = getFeaturedProducts();
+
+  // Auto-play video on mount
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch((error) => {
+        console.log("Auto-play was prevented:", error);
+      });
+    }
+  }, []);
 
   // 3D Mouse Movement Effect
   useEffect(() => {
@@ -106,20 +142,76 @@ export default function HomePage() {
     };
   }, []);
 
+  const toggleCategory = (categoryId: string) => {
+    if (expandedCategory === categoryId) {
+      setExpandedCategory(null);
+    } else {
+      setExpandedCategory(categoryId);
+    }
+  };
+
   return (
     <>
-      {/* Parallax Hero Section - Full Width */}
-      <section className="relative w-full">
-        {/* Image Sequence Parallax */}
-        <ParallaxHero
-          totalFrames={200}
-          framesFolder="/parallax"
-          fileExtension="jpg"
-          filePrefix="ezgif-frame-"
-        />
+      {/* Video Hero Section - Full Width */}
+      <section className="relative w-full h-screen overflow-hidden">
+        {/* Background Video */}
+        <video
+          ref={videoRef}
+          className="absolute inset-0 w-full h-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source
+            src="/Cinematic_cosmetic_product_202602080449_kb11q.mp4"
+            type="video/mp4"
+          />
+          Your browser does not support the video tag.
+        </video>
 
-        {/* Text Overlays */}
-        <ParallaxTextOverlays sections={parallaxSections} />
+        {/* Overlay Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60 z-10"></div>
+
+        {/* Centered Text Overlay */}
+        <div className="absolute inset-0 z-20 flex items-center justify-center">
+          <Container>
+            <div className="text-center text-white">
+              <div
+                className="animate-fade-in-up opacity-0"
+                style={{
+                  animationDelay: "0.2s",
+                  animationFillMode: "forwards",
+                }}
+              >
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-extralight mb-6 leading-tight">
+                  Professional Hair
+                  <br />
+                  <span className="font-light bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-white">
+                    & Skin Care
+                  </span>
+                </h1>
+                <p className="text-xl md:text-2xl text-white/80 font-light mb-12 max-w-2xl mx-auto leading-relaxed">
+                  Experience the difference with salon-grade formulations
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <Link
+                    href="/products"
+                    className="inline-block px-10 py-4 bg-white text-purple-700 text-sm tracking-widest uppercase font-medium hover:bg-purple-50 transition-all duration-500 rounded-full shadow-2xl hover:shadow-white/30 hover:scale-105 transform"
+                  >
+                    Explore Products
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="inline-block px-10 py-4 bg-transparent border-2 border-white text-white text-sm tracking-widest uppercase font-medium hover:bg-white hover:text-purple-700 transition-all duration-500 rounded-full hover:scale-105 transform"
+                  >
+                    Request Quote
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </Container>
+        </div>
 
         {/* 3D Floating Elements */}
         <div className="fixed inset-0 pointer-events-none z-20 overflow-hidden">
@@ -129,7 +221,7 @@ export default function HomePage() {
         </div>
 
         {/* Enhanced Scroll Indicator */}
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-30 pointer-events-none">
           <div className="relative">
             <div className="w-6 h-10 border-2 border-white/80 rounded-full flex justify-center pt-2 backdrop-blur-sm bg-black/10">
               <div className="w-1 h-2 bg-white rounded-full animate-bounce" />
@@ -175,9 +267,9 @@ export default function HomePage() {
                     style={{ transform: "translateZ(20px)" }}
                   >
                     <div className="mb-6 transform group-hover:scale-110 transition-transform duration-500">
-                      <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center group-hover:from-purple-600 group-hover:to-purple-700 transition-all duration-500 shadow-lg group-hover:shadow-purple-500/50 relative">
-                        <span className="text-3xl transform group-hover:scale-110 transition-transform duration-500">
-                          {feature.icon}
+                      <div className="w-20 h-20 mx-auto bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl flex items-center justify-center group-hover:from-purple-600 group-hover:to-purple-700 transition-all duration-500 shadow-lg group-hover:shadow-purple-500/50 relative">
+                        <span className="text-purple-700 group-hover:text-white transform group-hover:scale-110 transition-all duration-500 relative z-10">
+                          <feature.icon size={35} />
                         </span>
                         <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                       </div>
@@ -187,6 +279,7 @@ export default function HomePage() {
                       {feature.title}
                     </h3>
 
+                    {/* Description */}
                     <p className="text-sm text-gray-600 font-light leading-relaxed">
                       {feature.description}
                     </p>
@@ -203,81 +296,56 @@ export default function HomePage() {
         </Container>
       </section>
 
-      {/* Product Categories - 3D Grid */}
-      <section className="py-32 md:py-40 bg-white relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-100/30 rounded-full blur-3xl"></div>
-
+      {/* Product Categories - Minimal Luxury Design */}
+      <section className="py-24 bg-white">
         <Container>
-          <div className="text-center mb-24 relative z-10">
-            <div className="inline-block">
-              <span className="text-sm tracking-[0.35em] uppercase text-purple-600 font-light mb-6 block animate-slide-down">
-                Our Range
-              </span>
-              <h2 className="text-4xl md:text-6xl font-light text-gray-900 max-w-3xl mx-auto leading-tight mb-4 animate-fade-in">
-                Product Categories
-              </h2>
-              <div className="h-1 w-32 bg-gradient-to-r from-purple-400 via-purple-600 to-purple-400 mx-auto rounded-full"></div>
-            </div>
+          <div className="text-center mb-20">
+            <span className="text-xs tracking-[0.4em] uppercase text-gray-400 font-medium mb-4 block">
+              Discover
+            </span>
+            <h2 className="text-3xl md:text-5xl font-light text-gray-900 mb-6 tracking-wide">
+              The Collections
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto perspective-container">
-            {featuredCategories.map((category, index) => (
-              <div
-                key={category.id}
-                className="card-3d group animate-fade-in-up opacity-0"
-                style={{
-                  animationDelay: `${index * 0.15}s`,
-                  animationFillMode: "forwards",
-                  transformStyle: "preserve-3d",
-                }}
-              >
-                <div className="relative bg-white rounded-3xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 overflow-hidden border border-purple-100/50 h-full transform-gpu">
-                  {/* 3D Image Container */}
-                  <div className="relative w-full h-64 bg-gradient-to-br from-purple-50 via-white to-purple-50/50 overflow-hidden rounded-[10px]">
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-400/0 to-purple-600/10 group-hover:from-purple-400/10 group-hover:to-purple-600/20 transition-all duration-700"></div>
-                    <Image
-                      src={category.image}
-                      alt={category.name}
-                      fill
-                      className="object-contain p-8 group-hover:scale-110 group-hover:rotate-2 transition-all duration-700 rounded-[10px]"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                      style={{ transform: "translateZ(30px)" }}
-                    />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 max-w-4xl mx-auto px-4">
+            {/* Hair Care Card */}
+            <Link href="/products/hair-care" className="group block relative overflow-hidden aspect-[4/3] cursor-pointer rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600 to-purple-800 transition-colors duration-500"></div>
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500"></div>
 
-                    {/* Floating particles effect */}
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                      <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400 rounded-full animate-float-particle"></div>
-                      <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-purple-300 rounded-full animate-float-particle animation-delay-500"></div>
-                      <div className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-purple-500 rounded-full animate-float-particle animation-delay-1000"></div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 relative z-10 bg-white/80 backdrop-blur-sm">
-                    <h3 className="text-lg font-medium text-gray-900 mb-2 group-hover:text-purple-600 transition-colors duration-500">
-                      {category.name}
-                    </h3>
-                    <p className="text-sm text-gray-500 font-light mb-4 leading-relaxed line-clamp-2">
-                      {category.description}
-                    </p>
-                    <Link
-                      href={`/products/${category.id}`}
-                      className="inline-flex items-center text-xs text-purple-600 font-medium tracking-wide group-hover:gap-3 transition-all duration-500 relative"
-                    >
-                      <span className="relative z-10">Explore</span>
-                      <span className="inline-block ml-1 transition-transform group-hover:translate-x-2 duration-500">
-                        →
-                      </span>
-                      <div className="absolute inset-0 -left-2 -right-2 bg-purple-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"></div>
-                    </Link>
-                  </div>
-
-                  {/* 3D Border Glow */}
-                  <div className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-400/20 via-transparent to-purple-600/20"></div>
-                  </div>
-                </div>
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                <span className="text-xs md:text-sm tracking-[0.3em] uppercase opacity-70 group-hover:opacity-100 transition-all duration-700">
+                  Professional
+                </span>
+                <h3 className="text-3xl md:text-4xl font-light mb-4 tracking-wider mt-2">
+                  HAIR CARE
+                </h3>
+                <div className="h-px w-12 bg-white/50 group-hover:w-24 group-hover:bg-white transition-all duration-700"></div>
+                <span className="mt-6 text-xs md:text-sm tracking-widest border-b border-transparent group-hover:border-white/50 pb-1 transition-all duration-500 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0">
+                  EXPLORE PRODUCTS
+                </span>
               </div>
-            ))}
+            </Link>
+
+            {/* Skin Care Card */}
+            <Link href="/products/skin-care" className="group block relative overflow-hidden aspect-[4/3] cursor-pointer rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-purple-700 transition-colors duration-500"></div>
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500"></div>
+
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6">
+                <span className="text-xs md:text-sm tracking-[0.3em] uppercase opacity-70 group-hover:opacity-100 transition-all duration-700">
+                  Essentials
+                </span>
+                <h3 className="text-3xl md:text-4xl font-light mb-4 tracking-wider mt-2">
+                  SKIN CARE
+                </h3>
+                <div className="h-px w-12 bg-white/50 group-hover:w-24 group-hover:bg-white transition-all duration-700"></div>
+                <span className="mt-6 text-xs md:text-sm tracking-widest border-b border-transparent group-hover:border-white/50 pb-1 transition-all duration-500 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0">
+                  EXPLORE PRODUCTS
+                </span>
+              </div>
+            </Link>
           </div>
         </Container>
       </section>
@@ -314,7 +382,7 @@ export default function HomePage() {
                   transformStyle: "preserve-3d",
                 }}
               >
-                <div className="relative bg-white rounded-3xl hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 overflow-hidden border border-purple-100/50 h-full">
+                <div className="relative bg-white hover:shadow-2xl hover:shadow-purple-500/20 transition-all duration-700 overflow-hidden border border-purple-100/50 h-full">
                   {/* Product Image with 3D Effect */}
                   <div className="relative w-full h-64 bg-gradient-to-br from-purple-50 via-white to-purple-50/50 overflow-hidden rounded-[10px]">
                     <div className="absolute inset-0 bg-gradient-to-br from-transparent to-purple-600/5 group-hover:to-purple-600/10 transition-all duration-700"></div>
@@ -352,7 +420,7 @@ export default function HomePage() {
                     <div className="flex gap-2">
                       <Link
                         href={`/products/${product.category}/${product.slug}`}
-                        className="flex-1 text-center px-3 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-xs font-medium rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-500 shadow-lg hover:shadow-purple-500/50 hover:scale-105 transform"
+                        className="flex justify-center items-center px-3 py-2.5 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-xs font-medium rounded-xl hover:from-purple-700 hover:to-purple-800 transition-all duration-500 shadow-lg hover:shadow-purple-500/50 hover:scale-105 transform"
                       >
                         View Details
                       </Link>
@@ -477,6 +545,20 @@ export default function HomePage() {
 
         .animate-fade-in-up {
           animation: fade-in-up 1s ease-out;
+        }
+
+        /* Fade In Animation */
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        .animate-fade-in {
+          animation: fade-in 1s ease-out;
         }
 
         /* Slide Down Animation */
@@ -652,11 +734,6 @@ export default function HomePage() {
           will-change: transform;
         }
 
-        /* Smooth transforms for better performance */
-        * {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
-        }
       `}</style>
     </>
   );

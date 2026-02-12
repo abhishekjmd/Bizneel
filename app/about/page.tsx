@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { useEffect } from "react";
+import { Gem, Sparkle, Target } from "lucide-react";
 
 const metadata: Metadata = {
   title: "About Us",
@@ -20,21 +21,21 @@ export default function AboutPage() {
       title: "Professional-Grade Quality",
       description:
         "Formulated for consistent performance in salons and at home, with reliable results every time.",
-      icon: "💎",
+      icon: Gem,
       gradient: "from-purple-500 to-purple-700",
     },
     {
       title: "Honest & Transparent",
       description:
         "No exaggerated claims or misleading promises. Just effective products that deliver what they say.",
-      icon: "✨",
+      icon: Sparkle,
       gradient: "from-purple-600 to-purple-800",
     },
     {
       title: "Focused Product Range",
       description:
         "A curated selection of essentials—hair care and skin care products designed for everyday use.",
-      icon: "🎯",
+      icon: Target,
       gradient: "from-purple-700 to-purple-900",
     },
   ];
@@ -88,7 +89,7 @@ export default function AboutPage() {
   return (
     <>
       {/* Hero Section - 3D Immersive */}
-      <section className="relative min-h-[70vh] flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900">
+      <section className="relative min-h-[70vh] mt-20 flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900">
         {/* Animated 3D Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-500/20 rounded-full blur-3xl animate-blob"></div>
@@ -327,7 +328,7 @@ export default function AboutPage() {
                         className={`w-20 h-20 bg-gradient-to-br ${value.gradient} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-purple-500/50 transition-all duration-500 relative`}
                       >
                         <span className="text-3xl transform group-hover:scale-110 transition-transform duration-500">
-                          {value.icon}
+                          <value.icon size={35} color="white" />
                         </span>
                         <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                       </div>
@@ -657,12 +658,6 @@ export default function AboutPage() {
         .transform-gpu {
           transform: translateZ(0);
           will-change: transform;
-        }
-
-        /* Smooth transforms */
-        * {
-          backface-visibility: hidden;
-          -webkit-backface-visibility: hidden;
         }
       `}</style>
     </>
