@@ -12,7 +12,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Bizneel - Premium Natural Cosmetics",
+    default: "Bizneel",
     template: "%s | Bizneel",
   },
   description:
@@ -26,12 +26,17 @@ export const metadata: Metadata = {
     "premium skincare",
   ],
   authors: [{ name: "Bizneel" }],
+  icons: {
+    icon: "/tempLogo.png",
+    shortcut: "/tempLogo.png",
+    apple: "/tempLogo.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
     url: "https://bizneel.com",
     siteName: "Bizneel",
-    title: "Bizneel - Premium Natural Cosmetics",
+    title: "Bizneel",
     description:
       "Discover premium cosmetics crafted with nature's finest ingredients.",
   },
